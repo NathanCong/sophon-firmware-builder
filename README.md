@@ -48,5 +48,28 @@ sudo bash scripts/close.sh --no-clean && sudo bash scripts/start.sh --no-build
 
 ## Usage
 
+### 1. 配置宿主环境（eg. Fedora 44 x86_64）
+
 ```bash
+#
+# 安装 python 工具
+#
+sudo dnf install python3-pip
+python3 -m pip install --upgrade pip setuptools setuptools_rust dfss -i https://pypi.tuna.tsinghua.edu.cn/simple
+```
+
+### 2. 下载相关资源
+
+```bash
+#
+# 进入三方目录
+#
+cd ./volumes/extern
+#
+# 下载资源
+#
+git clone https://github.com/sophgo/bootloader-arm64.git
+python3 -m dfss --dflag=gcc_linaro_6.3.1
+python3 -m dfss --dflag=distro_focal_28ad82b4cf01327b1f81d3d193923424
+git clone https://github.com/sophgo/linux-arm64.git
 ```
