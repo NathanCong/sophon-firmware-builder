@@ -88,4 +88,4 @@ gdb \
 #
 # 6. 设置工作目录
 #
-WORKDIR /build
+WORKDIR /workspace

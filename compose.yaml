@@ -1,0 +1,56 @@
+#
+# Docker Compose 配置
+#
+services:
+  sophon-firmware-builder:
+    #
+    # ====================== 1. 构建标识相关 ======================
+    #
+    # 配置镜像构建
+    build:
+      context: .
+      dockerfile: Dockerfile
+    # 配置镜像名称
+    image: sophon-firmware-builder:v1
+    # 配置容器名称
+    container_name: sophon-firmware-builder
+    #
+    # ====================== 2. 资源限制相关 ======================
+    #
+    # 限制核心占用
+    cpus: 4
+    # 限制内存占用
+    mem_limit: 16g
+    memswap_limit: 32g
+    #
+    # ====================== 3. 存储挂载相关 ======================
+    #
+    # 挂载数据卷
+    volumes:
+      - type: bind
+        source: ./volumes/build
+        target: /workspace/build
+        bind:
+          create_host_path: false
+      - type: bind
+        source: ./volumes/extern
+        target: /workspace/extern
+        bind:
+          create_host_path: false
+    #
+    # ====================== 4. 终端输入相关 ======================
+    #
+    # 分配虚拟终端（TTY），等价于 `docker run -t`
+    tty: true
+    # 保持标准输入 stdin 打开，等价于 `docker run -i`
+    stdin_open: true
+    #
+    # ====================== 5. 启动命令相关 ======================
+    #
+    # 容器启动后执行的默认程序，等价 docker run 末尾的 `/bin/bash`
+    command: /bin/bash
+    #
+    # ====================== 6. 重启策略相关 ======================
+    #
+    # 容器重启策略：`no`，容器退出永远不会自动重启
+    restart: "no"
