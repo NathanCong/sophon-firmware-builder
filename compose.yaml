@@ -37,6 +37,11 @@ services:
         target: /workspace/extern
         bind:
           create_host_path: false
+      - type: bind
+        source: /dev
+        target: /dev
+        bind:
+          create_host_path: false
     #
     # ====================== 4. 终端输入相关 ======================
     #
