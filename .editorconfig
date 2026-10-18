@@ -1,0 +1,34 @@
+#
+# EditorConfig 配置文件
+#
+# 官网地址：https://editorconfig.org/
+#
+# root = true                      表示这是根配置文件，EditorConfig 会停止在父目录中查找 .editorconfig 文件
+#
+root = true
+
+#
+# 通用文件配置
+#
+# charset = utf-8                  文件编码为 UTF-8
+# end_of_line = lf                 换行符为 LF
+# insert_final_newline = true      文件末尾插入换行符
+# indent_style = space             缩进使用空格
+# indent_size = 2                  缩进大小为 2 个空格
+# trim_trailing_whitespace = true  删除行尾空白
+#
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+indent_style = space
+indent_size = 2
+trim_trailing_whitespace = true
+
+#
+# 说明文件配置
+#
+# trim_trailing_whitespace = false  不删除行尾空白
+#
+[*.md]
+trim_trailing_whitespace = false
