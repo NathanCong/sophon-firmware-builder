@@ -160,7 +160,9 @@ cp -r sophon-soc-libsophon_0.5.3_arm64.deb /workspace/build/install/soc_bm1684/b
 # 整体构建
 #
 apt install dosfstools qemu-user-static binfmt-support
+update-binfmts --enable qemu-aarch64
 which mkfs.fat
+ls /proc/sys/fs/binfmt_misc/qemu-aarch64
 
 cd /workspace/build/
 build_package
