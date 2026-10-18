@@ -1,10 +1,21 @@
 #
+# 忽略：volumes 目录下的所有内容
+#
+volumes/**
+
+#
+# 保留：volumes/build 目录
+#
+!volumes/build
+!volumes/build/.gitkeep
+
+#
+# 保留：volumes/extern 目录
+#
+!volumes/extern
+!volumes/extern/.gitkeep
+
+#
 # 忽略：.env 文件
 #
 .env
-
-#
-# 忽略：volumes 文件夹（仅保留 .gitkeep）
-#
-!volumes/**/.gitkeep
-volumes

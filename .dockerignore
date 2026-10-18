@@ -1,14 +1,14 @@
 #
-# 忽略：项目所有文件
+# 忽略：项目根目录下所有文件
 #
 **
-
-#
-# 保留：Dockerfile 文件
-#
-!Dockerfile
 
 #
 # 保留：.dockerignore 文件
 #
 !.dockerignore
+
+#
+# 保留：Dockerfile 文件
+#
+!Dockerfile
