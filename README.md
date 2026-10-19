@@ -155,35 +155,33 @@ ls /proc/sys/fs/binfmt_misc/qemu-aarch64
 # 修改内核配置
 #
 # 使用 SophonUI 的配置
-# CONFIG_DRM_SMI=y                     SMI DRM驱动【内置进内核】
-# # CONFIG_DRM_SMI_HDMI is not set     SMI HDMI功能【关闭】（核心，原厂不初始化SM750显示，留给SophonHDMI用户态接管）
-# # CONFIG_FB_MODE_HELPERS is not set  关闭 
-# # CONFIG_FB_TILEBLITTING is not set  关闭
+# CONFIG_DRM_SMI=y       SMI DRM 驱动【内置进内核】
+# CONFIG_DRM_SMI_HDMI=n  SMI HDMI 功能【关闭】（原厂不初始化 SM750 显示，留给 SophonHDMI 用户态接管）
 #
 # 使用 Xfce4 的配置
 # CONFIG_DRM_SMI=y
 # CONFIG_DRM_SMI_HDMI=y
-# CONFIG_FB_MODE_HELPERS=y
-# CONFIG_FB_TILEBLITTING=y
 #
-# 每项配置对应的位置
-# CONFIG_DRM_SMI          Device Driver > Graphics suppor > SiliconMotion SM750/SM768 DRM driver
-# CONFIG_DRM_SMI_HDMI     Device Driver > Graphics suppor > SiliconMotion SM750/SM768 DRM driver > Enable SM750 HDMI output
-# CONFIG_FB_MODE_HELPERS  Device Driver > Graphics suppor > Frame buffer Device > Support for frame buffer devices > Enable Video Mode Handling Helpers
-# CONFIG_FB_TILEBLITTING  Device Driver > Graphics suppor > Frame buffer Device > Support for frame buffer devices > Enable Tile Blitting Support
-#
-cd /workspace/build/linux-arm64/build/bm1684/normal
-make ARCH=arm64 menuconfig
-grep -E "CONFIG_DRM_SMI|CONFIG_FB" .config
+sed -i 's/CONFIG_DRM_SMI_HDMI=n/CONFIG_DRM_SMI_HDMI=y/' /workspace/build/linux-arm64/arch/arm64/configs/bitmain_bm1684_normal_defconfig
+grep -E "CONFIG_DRM_SMI|CONFIG_FB" /workspace/build/linux-arm64/arch/arm64/configs/bitmain_bm1684_normal_defconfig
 
 #
 # 执行 bsp 构建
 #
+# 构建清理：
+# 1. rm -rf /workspace/build/linux-arm64/build
+# 2. rm -rf /workspace/build/install
+#
 source bootloader-arm64/scripts/envsetup.sh
 build_bsp_without_package
+grep -E "CONFIG_DRM_SMI|CONFIG_FB" /workspace/build/linux-arm64/build/bm1684/normal/.config
 
 #
 # 执行 'libsophon*.deb' 构建
+#
+# 构建清理：
+# 1. rm -rf /workspace/build/soc_kernel
+# 2. rm -rf /workspace/build/libsophon/build
 #
 mkdir -p soc_kernel
 dpkg -x /workspace/build/install/soc_bm1684/bsp-debs/linux-headers-5.4.217-bm1684.deb soc_kernel
@@ -196,21 +194,25 @@ cmake \
 -DCROSS_COMPILE_PATH=/workspace/build/gcc-linaro-6.3.1-2017.05-x86_64_aarch64-linux-gnu \
 -DCMAKE_TOOLCHAIN_FILE=/workspace/build/libsophon/toolchain-aarch64-linux.cmake \
 -DCMAKE_INSTALL_PREFIX=$PWD/../install ..
-make
-make driver
-make vpu_driver
-make jpu_driver
-make package
+make \
+&& make driver \
+&& make vpu_driver \
+&& make jpu_driver \
+&& make package
 
 #
 # 执行 88x2bu.ko 构建
 #
+# 构建清理：
+# 1. make clean
+#
 cd /workspace/build/88x2bu-20210702
-make -j$(nproc) \
+make \
 ARCH=arm64 \
 CROSS_COMPILE=/workspace/build/gcc-linaro-6.3.1-2017.05-x86_64_aarch64-linux-gnu/bin/aarch64-linux-gnu- \
 KSRC=/workspace/build/linux-arm64/build/bm1684/normal \
-CONFIG_POWER_SAVING=n
+CONFIG_POWER_SAVING=n \
+-j$(nproc)
 
 #
 # 拷贝相关包到 bsp-debs
