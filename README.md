@@ -124,7 +124,8 @@ cp -r bootloader-arm64 linux-arm64 libsophon 88x2bu-20210702 /workspace/build/
 #
 # network-manager_1.22.10-1ubuntu2.4_arm64.deb
 #
-cp -r network-manager_1.22.10-1ubuntu2.4_arm64.deb /workspace/build/
+mkdir -p /workspace/build/debs/
+cp -r network-manager_1.22.10-1ubuntu2.4_arm64.deb /workspace/build/debs
 
 #
 # 拷贝系统镜像
