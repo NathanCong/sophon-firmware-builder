@@ -152,20 +152,6 @@ update-binfmts --enable qemu-aarch64
 ls /proc/sys/fs/binfmt_misc/qemu-aarch64
 
 #
-# 修改内核配置
-#
-# 使用 SophonUI 的配置
-# CONFIG_DRM_SMI=y       SMI DRM 驱动【内置进内核】
-# CONFIG_DRM_SMI_HDMI=n  SMI HDMI 功能【关闭】（原厂不初始化 SM750 显示，留给 SophonHDMI 用户态接管）
-#
-# 使用 Xfce4 的配置
-# CONFIG_DRM_SMI=y
-# CONFIG_DRM_SMI_HDMI=y
-#
-sed -i 's/CONFIG_DRM_SMI_HDMI=n/CONFIG_DRM_SMI_HDMI=y/' /workspace/build/linux-arm64/arch/arm64/configs/bitmain_bm1684_normal_defconfig
-grep -E "CONFIG_DRM_SMI|CONFIG_FB" /workspace/build/linux-arm64/arch/arm64/configs/bitmain_bm1684_normal_defconfig
-
-#
 # 执行 bsp 构建
 #
 # 构建清理：
@@ -174,7 +160,6 @@ grep -E "CONFIG_DRM_SMI|CONFIG_FB" /workspace/build/linux-arm64/arch/arm64/confi
 #
 source bootloader-arm64/scripts/envsetup.sh
 build_bsp_without_package
-grep -E "CONFIG_DRM_SMI|CONFIG_FB" /workspace/build/linux-arm64/build/bm1684/normal/.config
 
 #
 # 执行 'libsophon*.deb' 构建
