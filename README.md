@@ -213,9 +213,8 @@ cd /workspace/build/
 cp -r libsophon/build/sophon-soc-libsophon_0.5.3_arm64.deb /workspace/build/install/soc_bm1684/bsp-debs
 cp -r release/sophon-mw_20260414_035450/sophon-mw-soc-sophon-ffmpeg_0.15.0_arm64.deb /workspace/build/install/soc_bm1684/bsp-debs
 cp -r release/sophon-mw_20260414_035450/sophon-mw-soc-sophon-opencv_0.15.0_arm64.deb /workspace/build/install/soc_bm1684/bsp-debs
-cp -r 88x2bu-20210702/88x2bu.ko /workspace/build/install/soc_bm1684/bsp-debs/
-mkdir -p /workspace/build/install/soc_bm1684/debs
-cp -r network-manager_1.22.10-1ubuntu2.4_arm64.deb /workspace/build/install/soc_bm1684/debs
+cp -r 88x2bu-20210702/88x2bu.ko /workspace/build/install/soc_bm1684/bsp-debs
+cp -r debs /workspace/build/install/soc_bm1684
 
 #
 # 构建 sdcard
