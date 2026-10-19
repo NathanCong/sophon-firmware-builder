@@ -88,11 +88,6 @@ python3 -m dfss --dflag=distro_focal_28ad82b4cf01327b1f81d3d193923424
 # 从官网下载 SDK（https://developer.sophgo.com/site/index/material/all/all.html）
 #
 ls SDK-26.03.01.zip
-
-#
-# 从网站下载 debs（https://launchpad.net/ubuntu/focal/arm64/network-manager/1.22.10-1ubuntu2.4）
-#
-ls network-manager_1.22.10-1ubuntu2.4_arm64.deb
 ```
 
 ### 3. 配置容器环境
@@ -118,14 +113,6 @@ cd /workspace/extern
 # 88x2bu-20210702
 #
 cp -r bootloader-arm64 linux-arm64 libsophon 88x2bu-20210702 /workspace/build/
-
-#
-# 拷贝软件包
-#
-# network-manager_1.22.10-1ubuntu2.4_arm64.deb
-#
-mkdir -p /workspace/build/debs/
-cp -r network-manager_1.22.10-1ubuntu2.4_arm64.deb /workspace/build/debs
 
 #
 # 拷贝系统镜像
@@ -207,14 +194,12 @@ CONFIG_POWER_SAVING=n
 # sophon-mw-soc-sophon-ffmpeg*.deb
 # sophon-mw-soc-sophon-opencv*.deb
 # 88x2bu.ko
-# network-manager_1.22.10-1ubuntu2.4_arm64.deb
 #
 cd /workspace/build/
 cp -r libsophon/build/sophon-soc-libsophon_0.5.3_arm64.deb /workspace/build/install/soc_bm1684/bsp-debs
 cp -r release/sophon-mw_20260414_035450/sophon-mw-soc-sophon-ffmpeg_0.15.0_arm64.deb /workspace/build/install/soc_bm1684/bsp-debs
 cp -r release/sophon-mw_20260414_035450/sophon-mw-soc-sophon-opencv_0.15.0_arm64.deb /workspace/build/install/soc_bm1684/bsp-debs
 cp -r 88x2bu-20210702/88x2bu.ko /workspace/build/install/soc_bm1684/bsp-debs
-cp -r debs/* /workspace/build/install/soc_bm1684/bsp-debs
 
 #
 # 构建 sdcard
