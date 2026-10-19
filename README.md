@@ -109,20 +109,59 @@ sudo docker exec -it sophon-firmware-builder /bin/bash
 #
 cd /workspace/extern
 
-cp -r bootloader-arm64 linux-arm64 libsophon 88x2bu-20210702 network-manager_1.22.10-1ubuntu2.4_arm64.deb /workspace/build/
+#
+# 拷贝源码
+#
+# bootloader-arm64
+# linux-arm64
+# libsophon
+# 88x2bu-20210702
+#
+cp -r bootloader-arm64 linux-arm64 libsophon 88x2bu-20210702 /workspace/build/
 
+#
+# 拷贝软件包
+#
+# network-manager_1.22.10-1ubuntu2.4_arm64.deb
+#
+cp -r network-manager_1.22.10-1ubuntu2.4_arm64.deb /workspace/build/
+
+#
+# 拷贝系统镜像
+#
 mkdir -p /workspace/build/distro/
 cp -r distro_focal_28ad82b4cf01327b1f81d3d193923424.tgz /workspace/build/distro/distro_focal.tgz
 
+#
+# 解压编译工具
+#
 tar -xJvf gcc-linaro-6.3.1-2017.05-x86_64_aarch64-linux-gnu.tar.xz -C /workspace/build/
 
+#
+# 解压 SophonSDK
+#
 7z x SDK-26.03.01.zip -o/workspace/build/
 ```
 
 ### 4. 执行编译构建
 
 ```bash
+#
+# 进入构建目录
+#
 cd /workspace/build
+
+#
+# 设置环境变量
+#
+export PATH=/workspace/build/gcc-linaro-6.3.1-2017.05-x86_64_aarch64-linux-gnu/bin:$PATH
+which aarch64-linux-gnu-gcc
+
+#
+# 激活模拟器
+#
+update-binfmts --enable qemu-aarch64
+ls /proc/sys/fs/binfmt_misc/qemu-aarch64
 
 #
 # 执行 bsp 构建
@@ -135,10 +174,6 @@ build_bsp_without_package
 #
 mkdir -p soc_kernel
 dpkg -x /workspace/build/install/soc_bm1684/bsp-debs/linux-headers-5.4.217-bm1684.deb soc_kernel
-
-export PATH=/workspace/build/gcc-linaro-6.3.1-2017.05-x86_64_aarch64-linux-gnu/bin:$PATH
-which aarch64-linux-gnu-gcc
-
 cd /workspace/build/libsophon
 mkdir build && cd build
 cmake \
@@ -178,16 +213,12 @@ cp -r libsophon/build/sophon-soc-libsophon_0.5.3_arm64.deb /workspace/build/inst
 cp -r release/sophon-mw_20260414_035450/sophon-mw-soc-sophon-ffmpeg_0.15.0_arm64.deb /workspace/build/install/soc_bm1684/bsp-debs
 cp -r release/sophon-mw_20260414_035450/sophon-mw-soc-sophon-opencv_0.15.0_arm64.deb /workspace/build/install/soc_bm1684/bsp-debs
 cp -r 88x2bu-20210702/88x2bu.ko /workspace/build/install/soc_bm1684/bsp-debs/
-
 mkdir -p /workspace/build/install/soc_bm1684/debs
 cp -r network-manager_1.22.10-1ubuntu2.4_arm64.deb /workspace/build/install/soc_bm1684/debs
 
 #
 # 构建 sdcard
 #
-update-binfmts --enable qemu-aarch64
-ls /proc/sys/fs/binfmt_misc/qemu-aarch64
-
 cd /workspace/build/
 source bootloader-arm64/scripts/envsetup.sh
 build_package
