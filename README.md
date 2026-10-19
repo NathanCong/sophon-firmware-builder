@@ -152,6 +152,31 @@ update-binfmts --enable qemu-aarch64
 ls /proc/sys/fs/binfmt_misc/qemu-aarch64
 
 #
+# 修改内核配置
+#
+# 使用 SophonUI 的配置
+# CONFIG_DRM_SMI=y                     SMI DRM驱动【内置进内核】
+# # CONFIG_DRM_SMI_HDMI is not set     SMI HDMI功能【关闭】（核心，原厂不初始化SM750显示，留给SophonHDMI用户态接管）
+# # CONFIG_FB_MODE_HELPERS is not set  关闭 
+# # CONFIG_FB_TILEBLITTING is not set  关闭
+#
+# 使用 Xfce4 的配置
+# CONFIG_DRM_SMI=y
+# CONFIG_DRM_SMI_HDMI=y
+# CONFIG_FB_MODE_HELPERS=y
+# CONFIG_FB_TILEBLITTING=y
+#
+# 每项配置对应的位置
+# CONFIG_DRM_SMI          Device Driver > Graphics suppor > SiliconMotion SM750/SM768 DRM driver
+# CONFIG_DRM_SMI_HDMI     Device Driver > Graphics suppor > SiliconMotion SM750/SM768 DRM driver > Enable SM750 HDMI output
+# CONFIG_FB_MODE_HELPERS  Device Driver > Graphics suppor > Frame buffer Device > Support for frame buffer devices > Enable Video Mode Handling Helpers
+# CONFIG_FB_TILEBLITTING  Device Driver > Graphics suppor > Frame buffer Device > Support for frame buffer devices > Enable Tile Blitting Support
+#
+cd /workspace/build/linux-arm64/build/bm1684/normal
+make ARCH=arm64 menuconfig
+grep -E "CONFIG_DRM_SMI|CONFIG_FB" .config
+
+#
 # 执行 bsp 构建
 #
 source bootloader-arm64/scripts/envsetup.sh
