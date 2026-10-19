@@ -66,16 +66,33 @@ python3 -m pip install --upgrade pip setuptools setuptools_rust dfss -i https://
 #
 cd volumes/extern
 
+#
+# 下载 bsp 构建相关仓库
+#
 git clone https://github.com/sophgo/bootloader-arm64.git
 git clone https://github.com/sophgo/linux-arm64.git
 git clone https://github.com/sophgo/libsophon.git
 
+#
+# 下载 88x2bu 构建相关仓库
+#
+git clone https://github.com/morrownr/88x2bu-20210702.git
+
+#
+# 下载 ubuntu 镜像 + gcc 编译工具
+#
 python3 -m dfss --dflag=gcc_linaro_6.3.1
 python3 -m dfss --dflag=distro_focal_28ad82b4cf01327b1f81d3d193923424
 
 #
 # 从官网下载 SDK（https://developer.sophgo.com/site/index/material/all/all.html）
 #
+ls SDK-26.03.01.zip
+
+#
+# 从网站下载 debs（https://launchpad.net/ubuntu/focal/arm64/network-manager/1.22.10-1ubuntu2.4）
+#
+ls network-manager_1.22.10-1ubuntu2.4_arm64.deb
 ```
 
 ### 3. 配置容器环境
@@ -92,18 +109,14 @@ sudo docker exec -it sophon-firmware-builder /bin/bash
 #
 cd /workspace/extern
 
-cp -r bootloader-arm64 /workspace/build/
+cp -r bootloader-arm64 linux-arm64 libsophon 88x2bu-20210702 network-manager_1.22.10-1ubuntu2.4_arm64.deb /workspace/build/
 
 mkdir -p /workspace/build/distro/
 cp -r distro_focal_28ad82b4cf01327b1f81d3d193923424.tgz /workspace/build/distro/distro_focal.tgz
 
-cp -r linux-arm64 /workspace/build/
-
 tar -xJvf gcc-linaro-6.3.1-2017.05-x86_64_aarch64-linux-gnu.tar.xz -C /workspace/build/
 
 7z x SDK-26.03.01.zip -o/workspace/build/
-
-cp -r libsophon /workspace/build/
 ```
 
 ### 4. 执行编译构建
@@ -112,24 +125,16 @@ cp -r libsophon /workspace/build/
 cd /workspace/build
 
 #
-# 构建 BSP
+# 执行 bsp 构建
 #
 source bootloader-arm64/scripts/envsetup.sh
 build_bsp_without_package
 
 #
-# 拷贝 'sophon-mw-soc-sophon-ffmpeg*.deb' 和 'sophon-mw-soc-sophon-opencv*.deb'
+# 执行 'libsophon*.deb' 构建
 #
-cp -r release/sophon-mw_20260414_035450/sophon-mw-soc-sophon-ffmpeg_0.15.0_arm64.deb /workspace/build/install/soc_bm1684/bsp-debs
-cp -r release/sophon-mw_20260414_035450/sophon-mw-soc-sophon-opencv_0.15.0_arm64.deb /workspace/build/install/soc_bm1684/bsp-debs
-
-#
-# 构建 'libsophon*.deb'
-#
-cp -r /workspace/build/install/soc_bm1684/bsp-debs/linux-headers-5.4.217-bm1684.deb /workspace/build/
-
 mkdir -p soc_kernel
-dpkg -x linux-headers-5.4.217-bm1684.deb soc_kernel
+dpkg -x /workspace/build/install/soc_bm1684/bsp-debs/linux-headers-5.4.217-bm1684.deb soc_kernel
 
 export PATH=/workspace/build/gcc-linaro-6.3.1-2017.05-x86_64_aarch64-linux-gnu/bin:$PATH
 which aarch64-linux-gnu-gcc
@@ -150,10 +155,32 @@ make jpu_driver
 make package
 
 #
-# 拷贝 'sophon-soc-driver*.deb' 和 'sophon-soc-libsophon*.deb'
+# 执行 88x2bu.ko 构建
 #
-cp -r sophon-soc-driver_0.5.3_arm64.deb /workspace/build/install/soc_bm1684/bsp-debs
-cp -r sophon-soc-libsophon_0.5.3_arm64.deb /workspace/build/install/soc_bm1684/bsp-debs
+cd /workspace/build/88x2bu-20210702
+make -j$(nproc) \
+ARCH=arm64 \
+CROSS_COMPILE=/workspace/build/gcc-linaro-6.3.1-2017.05-x86_64_aarch64-linux-gnu/bin/aarch64-linux-gnu- \
+KSRC=/workspace/build/linux-arm64/build/bm1684/normal \
+CONFIG_POWER_SAVING=n
+
+#
+# 拷贝相关包到 bsp-debs
+#
+# sophon-soc-libsophon*.deb
+# sophon-mw-soc-sophon-ffmpeg*.deb
+# sophon-mw-soc-sophon-opencv*.deb
+# 88x2bu.ko
+# network-manager_1.22.10-1ubuntu2.4_arm64.deb
+#
+cd /workspace/build/
+cp -r libsophon/build/sophon-soc-libsophon_0.5.3_arm64.deb /workspace/build/install/soc_bm1684/bsp-debs
+cp -r release/sophon-mw_20260414_035450/sophon-mw-soc-sophon-ffmpeg_0.15.0_arm64.deb /workspace/build/install/soc_bm1684/bsp-debs
+cp -r release/sophon-mw_20260414_035450/sophon-mw-soc-sophon-opencv_0.15.0_arm64.deb /workspace/build/install/soc_bm1684/bsp-debs
+cp -r 88x2bu-20210702/88x2bu.ko /workspace/build/install/soc_bm1684/bsp-debs/
+
+mkdir -p /workspace/build/install/soc_bm1684/debs
+cp -r network-manager_1.22.10-1ubuntu2.4_arm64.deb /workspace/build/install/soc_bm1684/debs
 
 #
 # 构建 sdcard
